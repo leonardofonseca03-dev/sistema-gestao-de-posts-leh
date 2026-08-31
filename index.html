@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Posts & Entregas</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen relative transition-colors duration-200 flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white dark:bg-slate-800 border-b border-brand-100 dark:border-slate-700 sticky top-0 z-10 shadow-sm transition-colors duration-200">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-brand-600 text-white flex items-center justify-center rounded-xl font-bold text-xl shadow-md shadow-brand-500/20">
+          P
+        </div>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white hidden sm:block">Painel de Conteúdos</h1>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="bg-brand-100 dark:bg-slate-700 text-brand-900 dark:text-brand-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 hidden md:block">
+          Posts Finalizados: <span id="totalPosts" class="text-brand-700 dark:text-brand-300 font-bold">0</span>
+        </div>
+        
+        <!-- Botão Calendário -->
+        <button id="btnAbrirCalendario" class="px-4 py-2 flex items-center gap-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors shadow-sm shadow-blue-500/20 text-sm">
+          📅 <span class="hidden sm:inline">Calendário</span>
+        </button>
+
+        <!-- Botão Modo Escuro -->
+        <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors shadow-sm">
+          🌙
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 w-full">
+    
+    <!-- Formulário de Cadastro -->
+    <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-brand-100 dark:border-slate-700 h-fit transition-colors duration-200">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span> Novo Post
+      </h2>
+
+      <form id="postForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Empresa</label>
+          <input type="text" id="empresa" required placeholder="Ex: Agência Spark, Loja X" 
+                 class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Post (Nome/Título)</label>
+          <input type="text" id="nomePost" required placeholder="Ex: Carrossel Dia das Mães" 
+                 class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Descrição / Ideias</label>
+          <textarea id="descricaoPost" rows="3" placeholder="Detalhes, referências, textos..." 
+                 class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Status</label>
+          <select id="status" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+            <option value="pendente">Pendente</option>
+            <option value="em_producao">Em Produção</option>
+            <option value="enviado_aprovacao">Finalizado (Enviado p/ Aprovação)</option>
+            <option value="postado">Finalizado (Postado)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Qtd de Posts</label>
+            <input type="number" step="1" min="1" id="quantidade" required placeholder="Ex: 3" 
+                   class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Envio</label>
+            <input type="date" id="dataEnvio" required 
+                   class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Link da Arte (Canva, Drive)</label>
+          <input type="url" id="arquivoUrl" placeholder="https://..." 
+                 class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
+        </div>
+
+        <button type="submit" id="btnSalvar" 
+                class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-xl transition shadow-lg shadow-brand-600/20 active:scale-[0.99]">
+          Cadastrar Post
+        </button>
+      </form>
+    </section>
+
+    <!-- Lista de Posts / Timeline -->
+    <section class="lg:col-span-2 space-y-4">
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white">Demandas Registradas</h2>
+      
+      <!-- Pesquisa Completa Integrada -->
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-brand-100 dark:border-slate-700 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between mb-4 transition-colors duration-200">
+        <div class="w-full md:flex-1">
+          <input type="text" id="buscaTexto" placeholder="Pesquisar por empresa ou título..." 
+                 class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
+        </div>
+        <div class="w-full md:w-48 relative">
+          <input type="date" id="buscaData" title="Filtrar por data"
+                 class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-700 dark:text-slate-200 cursor-pointer">
+        </div>
+        <div class="w-full md:w-48">
+          <select id="buscaStatus" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-sm text-slate-800 dark:text-white cursor-pointer">
+            <option value="todos">Todos os Status</option>
+            <option value="pendente">Pendentes</option>
+            <option value="em_producao">Em Produção</option>
+            <option value="enviado_aprovacao">Em Aprovação</option>
+            <option value="postado">Postados</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Feed de Cards -->
+      <div id="listaPosts" class="space-y-3">
+        <!-- Renderização via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Rodapé Maroto -->
+  <footer class="w-full border-t border-brand-100 dark:border-slate-700 bg-white dark:bg-slate-800 py-6 mt-auto transition-colors duration-200">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">
+        Desenvolvido por 
+        <a href="https://nomadsystems.carrd.co" target="_blank" class="text-brand-600 dark:text-brand-400 font-bold hover:underline hover:text-brand-700 dark:hover:text-brand-300 transition-colors">
+          Nomad Systems
+        </a> 🚀
+      </p>
+    </div>
+  </footer>
+
+  <!-- Modal de Calendário (NOVO) -->
+  <div id="modalCalendario" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex flex-col relative border border-slate-200 dark:border-slate-700">
+      
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-4">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            📅 <span id="tituloMesAnoCalendario">Mês Ano</span>
+          </h2>
+          <div class="flex gap-1">
+            <button id="btnMesAnterior" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">&lt;</button>
+            <button id="btnMesAtual" class="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">Hoje</button>
+            <button id="btnMesProximo" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">&gt;</button>
+          </div>
+        </div>
+        <button id="btnFecharCalendario" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-auto p-4 bg-slate-50 dark:bg-slate-900">
+        <!-- Cabeçalho Dias da Semana -->
+        <div class="grid grid-cols-7 gap-px mb-2 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+        </div>
+        <!-- Grid do Calendário -->
+        <div id="gridCalendario" class="grid grid-cols-7 gap-2">
+          <!-- Renderizado via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Edição -->
+  <div id="modalEdicao" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+      <button id="btnFecharModalEdicao" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Editar Demanda
+      </h2>
+
+      <form id="formEdicao" class="space-y-4">
+        <input type="hidden" id="editId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Empresa</label>
+          <input type="text" id="editEmpresa" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Post (Nome/Título)</label>
+          <input type="text" id="editNomePost" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Descrição / Ideias</label>
+          <textarea id="editDescricaoPost" rows="2" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Status</label>
+          <select id="editStatus" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+            <option value="pendente">Pendente</option>
+            <option value="em_producao">Em Produção</option>
+            <option value="enviado_aprovacao">Finalizado (Enviado p/ Aprovação)</option>
+            <option value="postado">Finalizado (Postado)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Qtd de Posts</label>
+            <input type="number" step="1" min="1" id="editQuantidade" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Envio</label>
+            <input type="date" id="editDataEnvio" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Link da Arte</label>
+          <input type="url" id="editArquivoUrl" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white">
+        </div>
+        <button type="submit" id="btnSalvarEdicao" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 active:scale-[0.99] mt-2">
+          Salvar Alterações
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Integration e Lógicas -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXXbbowjBZKuB0HpDJMuuuIVmdFgNgS2A",
+      authDomain: "sistema-gestao-de-posts-leh.firebaseapp.com",
+      projectId: "sistema-gestao-de-posts-leh",
+      storageBucket: "sistema-gestao-de-posts-leh.firebasestorage.app",
+      messagingSenderId: "681620195644",
+      appId: "1:681620195644:web:280f124ac488d06cacb639"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Dark Mode Logic
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlElement.classList.add('dark');
+      themeToggleBtn.innerText = '☀️';
+    } else {
+      htmlElement.classList.remove('dark');
+      themeToggleBtn.innerText = '🌙';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      htmlElement.classList.toggle('dark');
+      if (htmlElement.classList.contains('dark')) {
+        localStorage.theme = 'dark';
+        themeToggleBtn.innerText = '☀️';
+      } else {
+        localStorage.theme = 'light';
+        themeToggleBtn.innerText = '🌙';
+      }
+    });
+
+    // Elementos da página
+    const postForm = document.getElementById('postForm');
+    const listaPosts = document.getElementById('listaPosts');
+    const totalPostsEl = document.getElementById('totalPosts');
+    const buscaTexto = document.getElementById('buscaTexto');
+    const buscaStatus = document.getElementById('buscaStatus');
+    const buscaData = document.getElementById('buscaData');
+
+    const modalEdicao = document.getElementById('modalEdicao');
+    const formEdicao = document.getElementById('formEdicao');
+    const btnFecharModalEdicao = document.getElementById('btnFecharModalEdicao');
+
+    // Elementos do Calendário
+    const modalCalendario = document.getElementById('modalCalendario');
+    const btnAbrirCalendario = document.getElementById('btnAbrirCalendario');
+    const btnFecharCalendario = document.getElementById('btnFecharCalendario');
+    const gridCalendario = document.getElementById('gridCalendario');
+    const tituloMesAnoCalendario = document.getElementById('tituloMesAnoCalendario');
+    const btnMesAnterior = document.getElementById('btnMesAnterior');
+    const btnMesAtual = document.getElementById('btnMesAtual');
+    const btnMesProximo = document.getElementById('btnMesProximo');
+
+    let postsData = [];
+    let dataCalendarioAtual = new Date(); // Guarda o mês/ano que o calendário está mostrando
+
+    // Cores das Badges
+    const statusMap = {
+      pendente: { label: 'Pendente', bg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' },
+      em_producao: { label: 'Em Produção', bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' },
+      enviado_aprovacao: { label: 'Em Aprovação', bg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800' },
+      postado: { label: 'Postado', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' }
+    };
+
+    async function carregarPosts() {
+      listaPosts.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm">Carregando...</p>`;
+      const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+      const querySnapshot = await getDocs(q);
+      
+      postsData = [];
+      querySnapshot.forEach((doc) => {
+        postsData.push({ id: doc.id, ...doc.data() });
+      });
+
+      renderizarLista();
+      if (!modalCalendario.classList.contains('hidden')) {
+        renderizarCalendario();
+      }
+    }
+
+    function renderizarLista() {
+      const termoBusca = buscaTexto.value.toLowerCase();
+      const statusBusca = buscaStatus.value;
+      const dataBusca = buscaData.value;
+
+      const filtrados = postsData.filter(post => {
+        const matchStatus = statusBusca === 'todos' || post.status === statusBusca;
+        const nomeEmpresa = (post.empresa || '').toLowerCase();
+        const nomeDoPost = (post.nomePost || '').toLowerCase();
+        
+        const matchTexto = nomeEmpresa.includes(termoBusca) || nomeDoPost.includes(termoBusca);
+        const matchData = !dataBusca || post.dataEnvio === dataBusca;
+
+        return matchStatus && matchTexto && matchData;
+      });
+
+      let total = 0;
+      listaPosts.innerHTML = '';
+
+      if (filtrados.length === 0) {
+        listaPosts.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm py-4">Nenhum post encontrado na pesquisa.</p>`;
+        totalPostsEl.innerText = '0';
+        return;
+      }
+
+      filtrados.forEach(post => {
+        if (post.status === 'postado' || post.status === 'enviado_aprovacao') {
+          total += Number(post.quantidade || 0);
+        }
+
+        const badge = statusMap[post.status] || statusMap.pendente;
+
+        let dataExibicao = post.dataEnvio || 'N/A';
+        if (dataExibicao !== 'N/A') {
+          const partesData = dataExibicao.split('-');
+          if(partesData.length === 3) {
+             dataExibicao = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-100 dark:border-slate-700 shadow-sm flex flex-col md:flex-row md:items-start justify-between gap-4 transition-colors duration-200";
+        card.innerHTML = `
+          <div class="space-y-3 flex-1 w-full">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 dark:text-white text-base">${post.empresa}</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full border font-medium ${badge.bg}">${badge.label}</span>
+            </div>
+            
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700 w-full transition-colors duration-200">
+              <h3 class="font-semibold text-slate-800 dark:text-slate-200 text-sm">${post.nomePost || 'Sem título'}</h3>
+              ${post.descricaoPost ? `<p class="text-xs text-slate-600 dark:text-slate-400 mt-1 whitespace-pre-wrap">${post.descricaoPost}</p>` : ''}
+            </div>
+
+            <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-4">
+              <span>Data Envio: <strong class="dark:text-slate-300">${dataExibicao}</strong></span>
+              <span>Qtd Posts: <strong class="text-slate-700 dark:text-slate-300">${post.quantidade || 0}</strong></span>
+            </div>
+            ${post.arquivoUrl ? `
+              <a href="${post.arquivoUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline pt-1">
+                📎 Acessar link da arte
+              </a>
+            ` : ''}
+          </div>
+
+          <div class="flex flex-col gap-2 w-full md:w-auto">
+            <select data-id="${post.id}" class="mudar-status text-xs px-3 py-1.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition w-full cursor-pointer">
+              <option value="pendente" ${post.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+              <option value="em_producao" ${post.status === 'em_producao' ? 'selected' : ''}>Em Produção</option>
+              <option value="enviado_aprovacao" ${post.status === 'enviado_aprovacao' ? 'selected' : ''}>Em Aprovação</option>
+              <option value="postado" ${post.status === 'postado' ? 'selected' : ''}>Postado</option>
+            </select>
+            <div class="flex gap-2">
+              <button data-id="${post.id}" class="btn-editar flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 p-1.5 rounded-lg text-xs font-semibold transition">Editar</button>
+              <button data-id="${post.id}" class="btn-deletar flex-1 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 p-1.5 rounded-lg text-xs font-semibold transition">Excluir</button>
+            </div>
+          </div>
+        `;
+        listaPosts.appendChild(card);
+      });
+
+      totalPostsEl.innerText = total;
+
+      document.querySelectorAll('.mudar-status').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const id = e.target.dataset.id;
+          await updateDoc(doc(db, "posts", id), { status: e.target.value });
+          carregarPosts();
+        });
+      });
+
+      document.querySelectorAll('.btn-deletar').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm('Deseja remover este registro?')) {
+            await deleteDoc(doc(db, "posts", e.target.dataset.id));
+            carregarPosts();
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.dataset.id;
+          abrirModalEdicao(id);
+        });
+      });
+    }
+
+    // -- LÓGICA DO CALENDÁRIO --
+    function renderizarCalendario() {
+      gridCalendario.innerHTML = '';
+      const ano = dataCalendarioAtual.getFullYear();
+      const mes = dataCalendarioAtual.getMonth();
+
+      // Nomes dos meses em português
+      const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      tituloMesAnoCalendario.innerText = `${nomesMeses[mes]} ${ano}`;
+
+      // Encontrar 1º dia do mês e total de dias no mês
+      const primeiroDiaSemana = new Date(ano, mes, 1).getDay(); // 0 (Dom) a 6 (Sáb)
+      const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+      // Células vazias antes do dia 1
+      for (let i = 0; i < primeiroDiaSemana; i++) {
+        const divVazia = document.createElement('div');
+        divVazia.className = "bg-transparent p-2 min-h-[100px] border border-transparent rounded-lg opacity-50";
+        gridCalendario.appendChild(divVazia);
+      }
+
+      // Dias reais do mês
+      for (let dia = 1; dia <= diasNoMes; dia++) {
+        // Formatar string de data para YYYY-MM-DD pra cruzar com o Firebase
+        const dataString = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        
+        const cell = document.createElement('div');
+        cell.className = "bg-white dark:bg-slate-800 p-2 min-h-[100px] rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col gap-1 transition overflow-hidden hover:shadow-md cursor-pointer";
+        
+        // Destacar o dia de hoje
+        const hoje = new Date();
+        const ehHoje = dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear();
+        
+        cell.innerHTML = `
+          <div class="text-right mb-1">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold ${ehHoje ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300'}">${dia}</span>
+          </div>
+        `;
+
+        // Filtrar posts deste dia
+        const postsDoDia = postsData.filter(p => p.dataEnvio === dataString);
+        
+        postsDoDia.forEach(post => {
+          const badge = statusMap[post.status] || statusMap.pendente;
+          const postDiv = document.createElement('div');
+          // Chip colorido do post
+          postDiv.className = `text-[10px] leading-tight px-1.5 py-1 rounded border font-medium truncate ${badge.bg}`;
+          postDiv.title = `${post.empresa} - ${post.nomePost}`; // Tooltip nativo
+          postDiv.innerText = `${post.empresa}: ${post.nomePost || 'Post'}`;
+          cell.appendChild(postDiv);
+        });
+
+        // Clique na célula do calendário filtra a lista debaixo pela data
+        cell.addEventListener('click', () => {
+          buscaData.value = dataString;
+          renderizarLista();
+          modalCalendario.classList.add('hidden');
+        });
+
+        gridCalendario.appendChild(cell);
+      }
+    }
+
+    btnAbrirCalendario.addEventListener('click', () => {
+      renderizarCalendario();
+      modalCalendario.classList.remove('hidden');
+    });
+
+    btnFecharCalendario.addEventListener('click', () => {
+      modalCalendario.classList.add('hidden');
+    });
+
+    btnMesAnterior.addEventListener('click', () => {
+      dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() - 1);
+      renderizarCalendario();
+    });
+
+    btnMesProximo.addEventListener('click', () => {
+      dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() + 1);
+      renderizarCalendario();
+    });
+
+    btnMesAtual.addEventListener('click', () => {
+      dataCalendarioAtual = new Date(); // Reseta pro mês atual
+      renderizarCalendario();
+    });
+
+    // -- LÓGICA DE EDIÇÃO --
+    function abrirModalEdicao(id) {
+      const post = postsData.find(p => p.id === id);
+      if (!post) return;
+
+      document.getElementById('editId').value = post.id;
+      document.getElementById('editEmpresa').value = post.empresa || '';
+      document.getElementById('editNomePost').value = post.nomePost || '';
+      document.getElementById('editDescricaoPost').value = post.descricaoPost || '';
+      document.getElementById('editStatus').value = post.status || 'pendente';
+      document.getElementById('editQuantidade').value = post.quantidade || 1;
+      document.getElementById('editDataEnvio').value = post.dataEnvio || '';
+      document.getElementById('editArquivoUrl').value = post.arquivoUrl || '';
+
+      modalEdicao.classList.remove('hidden');
+    }
+
+    btnFecharModalEdicao.addEventListener('click', () => {
+      modalEdicao.classList.add('hidden');
+    });
+
+    formEdicao.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarEdicao');
+      btn.innerText = 'Salvando...';
+      btn.disabled = true;
+
+      try {
+        const id = document.getElementById('editId').value;
+        await updateDoc(doc(db, "posts", id), {
+          empresa: document.getElementById('editEmpresa').value,
+          nomePost: document.getElementById('editNomePost').value,
+          descricaoPost: document.getElementById('editDescricaoPost').value,
+          status: document.getElementById('editStatus').value,
+          quantidade: parseInt(document.getElementById('editQuantidade').value, 10),
+          dataEnvio: document.getElementById('editDataEnvio').value,
+          arquivoUrl: document.getElementById('editArquivoUrl').value
+        });
+
+        modalEdicao.classList.add('hidden');
+        await carregarPosts();
+      } catch (err) {
+        console.error("Erro ao editar:", err);
+        alert("Ocorreu um erro ao salvar as alterações.");
+      } finally {
+        btn.innerText = 'Salvar Alterações';
+        btn.disabled = false;
+      }
+    });
+
+    // Filtros de Pesquisa Form Principal
+    buscaTexto.addEventListener('input', renderizarLista);
+    buscaStatus.addEventListener('change', renderizarLista);
+    buscaData.addEventListener('change', renderizarLista);
+
+    // Novo Cadastro
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvar');
+      btn.innerText = 'Salvando...';
+      btn.disabled = true;
+
+      try {
+        const arquivoUrl = document.getElementById('arquivoUrl').value;
+
+        await addDoc(collection(db, "posts"), {
+          empresa: document.getElementById('empresa').value,
+          nomePost: document.getElementById('nomePost').value,
+          descricaoPost: document.getElementById('descricaoPost').value,
+          status: document.getElementById('status').value,
+          quantidade: parseInt(document.getElementById('quantidade').value, 10),
+          dataEnvio: document.getElementById('dataEnvio').value,
+          arquivoUrl: arquivoUrl,
+          criadoEm: new Date()
+        });
+
+        postForm.reset();
+        await carregarPosts();
+      } catch (err) {
+        console.error("Erro ao salvar:", err);
+        alert("Ocorreu um erro ao salvar o registro.");
+      } finally {
+        btn.innerText = 'Cadastrar Post';
+        btn.disabled = false;
+      }
+    });
+
+    carregarPosts();
+  </script>
+</body>
+</html>
