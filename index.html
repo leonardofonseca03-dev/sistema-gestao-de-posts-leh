@@ -115,7 +115,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Postagem</label>
-            <input type="date" id="dataPostagem" required 
+            <input type="date" id="dataPostagem" 
                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
           </div>
         </div>
@@ -261,7 +261,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Postagem</label>
-            <input type="date" id="editDataPostagem" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+            <input type="date" id="editDataPostagem" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
           </div>
         </div>
         <div>
@@ -277,7 +277,6 @@
 
   <!-- Firebase Integration e Lógicas -->
   <script type="module">
-    // AGORA USAMOS onSnapshot PARA ESCUTAR EM TEMPO REAL!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -316,7 +315,6 @@
       }
     });
 
-    // Elementos da página
     const splashScreen = document.getElementById('splashScreen');
     const postForm = document.getElementById('postForm');
     const listaPosts = document.getElementById('listaPosts');
@@ -349,7 +347,6 @@
       postado: { label: 'Postado', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' }
     };
 
-    // NOVA FUNÇÃO: Ouve as mudanças no Firebase em TEMPO REAL
     function iniciarEscutaTempoReal() {
       if(splashScreen && !splashScreen.classList.contains('hidden')) {
         listaPosts.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm">Atualizando...</p>`;
@@ -357,7 +354,6 @@
 
       const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
       
-      // onSnapshot atualiza a lista automaticamente sempre que algo muda no banco
       onSnapshot(q, (querySnapshot) => {
         postsData = [];
         querySnapshot.forEach((doc) => {
@@ -370,7 +366,6 @@
           renderizarCalendario();
         }
 
-        // Esconde a tela de abertura na primeira vez que os dados chegarem
         if (splashScreen && !splashScreen.classList.contains('hidden')) {
           setTimeout(() => {
             splashScreen.classList.add('opacity-0');
@@ -423,9 +418,9 @@
           }
         }
 
-        let dataPostagemExibicao = post.dataPostagem || 'N/A';
-        if (dataPostagemExibicao !== 'N/A') {
-          const partesDataPost = dataPostagemExibicao.split('-');
+        let dataPostagemExibicao = post.dataPostagem ? post.dataPostagem : 'Não definida';
+        if (post.dataPostagem) {
+          const partesDataPost = post.dataPostagem.split('-');
           if(partesDataPost.length === 3) {
              dataPostagemExibicao = `${partesDataPost[2]}/${partesDataPost[1]}/${partesDataPost[0]}`;
           }
@@ -478,7 +473,6 @@
         select.addEventListener('change', async (e) => {
           const id = e.target.dataset.id;
           await updateDoc(doc(db, "posts", id), { status: e.target.value });
-          // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
         });
       });
 
@@ -486,7 +480,6 @@
         btn.addEventListener('click', async (e) => {
           if (confirm('Deseja remover este registro?')) {
             await deleteDoc(doc(db, "posts", e.target.dataset.id));
-            // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
           }
         });
       });
@@ -619,7 +612,6 @@
         });
 
         modalEdicao.classList.add('hidden');
-        // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
       } catch (err) {
         console.error("Erro ao editar:", err);
         alert("Ocorreu um erro ao salvar as alterações.");
@@ -654,7 +646,6 @@
         });
 
         postForm.reset();
-        // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
       } catch (err) {
         console.error("Erro ao salvar:", err);
         alert("Ocorreu um erro ao salvar o registro.");
@@ -664,7 +655,6 @@
       }
     });
 
-    // Inicia a escuta em tempo real direto na abertura!
     iniciarEscutaTempoReal();
   </script>
 </body>
