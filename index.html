@@ -52,18 +52,23 @@
         <h1 class="text-xl font-bold text-slate-900 dark:text-white hidden sm:block">Painel de Conteúdos</h1>
       </div>
       
-      <div class="flex items-center gap-3">
-        <div class="bg-brand-100 dark:bg-slate-700 text-brand-900 dark:text-brand-100 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 hidden md:block">
-          Posts Finalizados: <span id="totalPosts" class="text-brand-700 dark:text-brand-300 font-bold">0</span>
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+        <div class="bg-brand-100 dark:bg-slate-700 text-brand-900 dark:text-brand-100 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-200 hidden md:block">
+          Posts Ativos: <span id="totalPosts" class="text-brand-700 dark:text-brand-300 font-bold">0</span>
         </div>
         
+        <!-- Botão Arquivados -->
+        <button id="btnAbrirArquivados" class="px-3 sm:px-4 py-2 flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors shadow-sm shadow-emerald-600/20 text-xs sm:text-sm">
+          📦 <span class="hidden sm:inline">Arquivados</span>
+        </button>
+
         <!-- Botão Rascunhos -->
-        <button id="btnAbrirRascunhos" class="px-4 py-2 flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold transition-colors shadow-sm shadow-purple-600/20 text-sm">
+        <button id="btnAbrirRascunhos" class="px-3 sm:px-4 py-2 flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold transition-colors shadow-sm shadow-purple-600/20 text-xs sm:text-sm">
           💡 <span class="hidden sm:inline">Rascunhos</span>
         </button>
 
         <!-- Botão Calendário -->
-        <button id="btnAbrirCalendario" class="px-4 py-2 flex items-center gap-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors shadow-sm shadow-blue-500/20 text-sm">
+        <button id="btnAbrirCalendario" class="px-3 sm:px-4 py-2 flex items-center gap-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors shadow-sm shadow-blue-500/20 text-xs sm:text-sm">
           📅 <span class="hidden sm:inline">Calendário</span>
         </button>
 
@@ -108,6 +113,8 @@
             <option value="pendente">Pendente</option>
             <option value="em_producao">Em Produção</option>
             <option value="enviado_aprovacao">Finalizado (Enviado p/ Aprovação)</option>
+            <option value="agendado_ecat">Agendado (E-Cat)</option>
+            <option value="enviado_revisoes">Enviado para Revisões</option>
             <option value="postado">Finalizado (Postado)</option>
           </select>
         </div>
@@ -158,7 +165,8 @@
             <option value="pendente">Pendentes</option>
             <option value="em_producao">Em Produção</option>
             <option value="enviado_aprovacao">Em Aprovação</option>
-            <option value="postado">Postados</option>
+            <option value="agendado_ecat">Agendado (E-Cat)</option>
+            <option value="enviado_revisoes">Enviado para Revisões</option>
           </select>
         </div>
       </div>
@@ -182,6 +190,27 @@
       </p>
     </div>
   </footer>
+
+  <!-- Modal de Arquivados -->
+  <div id="modalArquivados" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl h-[85vh] flex flex-col relative border border-slate-200 dark:border-slate-700">
+      
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          📦 Posts Arquivados (Postados)
+        </h2>
+        <button id="btnFecharArquivados" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-3 bg-slate-50 dark:bg-slate-900" id="listaArquivados">
+        <!-- Renderizado via JS -->
+      </div>
+    </div>
+  </div>
 
   <!-- Modal de Rascunhos -->
   <div id="modalRascunhos" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
@@ -219,6 +248,16 @@
                      class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white"></textarea>
             </div>
             <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Link de Posts</label>
+              <input type="url" id="rascunhoLinkPosts" placeholder="https://..." 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Links de Ideias (um por linha)</label>
+              <textarea id="rascunhoLinkIdeias" rows="2" placeholder="Cole vários links aqui, um por linha..." 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white"></textarea>
+            </div>
+            <div>
               <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data Limite para Postagem</label>
               <input type="date" id="rascunhoDataLimite" 
                      class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white cursor-pointer">
@@ -237,9 +276,9 @@
     </div>
   </div>
 
-  <!-- NOVO: Modal de Edição de Rascunho -->
+  <!-- Modal de Edição de Rascunho -->
   <div id="modalEdicaoRascunho" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 transition-opacity">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm p-5 relative border border-slate-200 dark:border-slate-700">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm p-5 relative border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
       <button id="btnFecharModalEdicaoRascunho" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -262,7 +301,15 @@
         </div>
         <div>
           <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Ideia / Descrição</label>
-          <textarea id="editRascunhoDescricao" rows="3" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
+          <textarea id="editRascunhoDescricao" rows="2" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Link de Posts</label>
+          <input type="url" id="editRascunhoLinkPosts" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Links de Ideias (um por linha)</label>
+          <textarea id="editRascunhoLinkIdeias" rows="2" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
         </div>
         <div>
           <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data Limite para Postagem</label>
@@ -348,6 +395,8 @@
             <option value="pendente">Pendente</option>
             <option value="em_producao">Em Produção</option>
             <option value="enviado_aprovacao">Finalizado (Enviado p/ Aprovação)</option>
+            <option value="agendado_ecat">Agendado (E-Cat)</option>
+            <option value="enviado_revisoes">Enviado para Revisões</option>
             <option value="postado">Finalizado (Postado)</option>
           </select>
         </div>
@@ -440,6 +489,11 @@
     const rascunhoForm = document.getElementById('rascunhoForm');
     const listaRascunhos = document.getElementById('listaRascunhos');
 
+    const modalArquivados = document.getElementById('modalArquivados');
+    const btnAbrirArquivados = document.getElementById('btnAbrirArquivados');
+    const btnFecharArquivados = document.getElementById('btnFecharArquivados');
+    const listaArquivados = document.getElementById('listaArquivados');
+
     const modalEdicaoRascunho = document.getElementById('modalEdicaoRascunho');
     const formEdicaoRascunho = document.getElementById('formEdicaoRascunho');
     const btnFecharModalEdicaoRascunho = document.getElementById('btnFecharModalEdicaoRascunho');
@@ -452,8 +506,19 @@
       pendente: { label: 'Pendente', bg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' },
       em_producao: { label: 'Em Produção', bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' },
       enviado_aprovacao: { label: 'Em Aprovação', bg: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800' },
+      agendado_ecat: { label: 'Agendado (E-Cat)', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800' },
+      enviado_revisoes: { label: 'Enviado para Revisões', bg: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800' },
       postado: { label: 'Postado', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' }
     };
+
+    async function verificarPostsAgendados() {
+      const hojeStr = new Date().toISOString().split('T')[0];
+      for (let post of postsData) {
+        if (post.status === 'agendado_ecat' && post.dataPostagem && post.dataPostagem <= hojeStr) {
+          await updateDoc(doc(db, "posts", post.id), { status: 'postado' });
+        }
+      }
+    }
 
     function iniciarEscutaTempoReal() {
       if(splashScreen && !splashScreen.classList.contains('hidden')) {
@@ -462,13 +527,16 @@
 
       const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
       
-      onSnapshot(q, (querySnapshot) => {
+      onSnapshot(q, async (querySnapshot) => {
         postsData = [];
         querySnapshot.forEach((doc) => {
           postsData.push({ id: doc.id, ...doc.data() });
         });
 
+        await verificarPostsAgendados();
+
         renderizarLista();
+        renderizarArquivados();
         if (!modalCalendario.classList.contains('hidden')) {
           renderizarCalendario();
         }
@@ -503,6 +571,8 @@
       const dataBusca = buscaData.value;
 
       const filtrados = postsData.filter(post => {
+        if (post.status === 'postado') return false;
+
         const matchStatus = statusBusca === 'todos' || post.status === statusBusca;
         const nomeEmpresa = (post.empresa || '').toLowerCase();
         const nomeDoPost = (post.nomePost || '').toLowerCase();
@@ -523,7 +593,7 @@
       }
 
       filtrados.forEach(post => {
-        if (post.status === 'postado' || post.status === 'enviado_aprovacao') {
+        if (post.status === 'enviado_aprovacao' || post.status === 'agendado_ecat' || post.status === 'enviado_revisoes') {
           total += 1;
         }
 
@@ -571,6 +641,8 @@
               <option value="pendente" ${post.status === 'pendente' ? 'selected' : ''}>Pendente</option>
               <option value="em_producao" ${post.status === 'em_producao' ? 'selected' : ''}>Em Produção</option>
               <option value="enviado_aprovacao" ${post.status === 'enviado_aprovacao' ? 'selected' : ''}>Em Aprovação</option>
+              <option value="agendado_ecat" ${post.status === 'agendado_ecat' ? 'selected' : ''}>Agendado (E-Cat)</option>
+              <option value="enviado_revisoes" ${post.status === 'enviado_revisoes' ? 'selected' : ''}>Enviado para Revisões</option>
               <option value="postado" ${post.status === 'postado' ? 'selected' : ''}>Postado</option>
             </select>
             <div class="flex gap-2">
@@ -605,6 +677,56 @@
       });
     }
 
+    function renderizarArquivados() {
+      listaArquivados.innerHTML = '';
+      const arquivados = postsData.filter(p => p.status === 'postado');
+
+      if (arquivados.length === 0) {
+        listaArquivados.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm py-4">Nenhum post arquivado ainda.</p>`;
+        return;
+      }
+
+      arquivados.forEach(post => {
+        let dataPostagemExibicao = post.dataPostagem ? post.dataPostagem : 'Não definida';
+        if (post.dataPostagem) {
+          const partes = post.dataPostagem.split('-');
+          if(partes.length === 3) dataPostagemExibicao = `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        const card = document.createElement('div');
+        card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+        card.innerHTML = `
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 dark:text-white text-sm">${post.empresa}</span>
+              <span class="text-[10px] px-2.5 py-0.5 rounded-full border font-medium bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800">Postado</span>
+            </div>
+            <h4 class="font-semibold text-slate-800 dark:text-slate-200 text-xs">${post.nomePost}</h4>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Data Postagem: ${dataPostagemExibicao}</p>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <select data-id="${post.id}" class="mudar-status-arq text-xs px-3 py-1.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-white w-full md:w-auto">
+              <option value="postado" selected>Arquivado (Postado)</option>
+              <option value="pendente">Mudar para Pendente</option>
+              <option value="em_producao">Mudar para Em Produção</option>
+              <option value="agendado_ecat">Mudar para Agendado (E-Cat)</option>
+            </select>
+          </div>
+        `;
+        listaArquivados.appendChild(card);
+      });
+
+      document.querySelectorAll('.mudar-status-arq').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const id = e.target.dataset.id;
+          const novoStatus = e.target.value;
+          if (novoStatus !== 'postado') {
+            await updateDoc(doc(db, "posts", id), { status: novoStatus });
+          }
+        });
+      });
+    }
+
     function renderizarRascunhos() {
       listaRascunhos.innerHTML = '';
       if (rascunhosData.length === 0) {
@@ -619,6 +741,27 @@
           if(partes.length === 3) dataLimiteExibicao = `${partes[2]}/${partes[1]}/${partes[0]}`;
         }
 
+        // Processa múltiplos links de ideias (um por linha)
+        let linksIdeiasHtml = '';
+        if (rascunho.linkIdeias) {
+          const linhas = rascunho.linkIdeias.split('\n');
+          linhas.forEach((linha, idx) => {
+            const trimmed = linha.trim();
+            if (trimmed) {
+              const urlValida = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+              linksIdeiasHtml += `<a href="${urlValida}" target="_blank" class="block text-[11px] text-brand-600 dark:text-brand-400 hover:underline truncate">🔗 Ideia ${idx + 1}: ${trimmed}</a>`;
+            }
+          });
+        }
+
+        // Processa link de posts
+        let linkPostsHtml = '';
+        if (rascunho.linkPosts) {
+          const postUrl = rascunho.linkPosts.trim();
+          const postUrlValida = postUrl.startsWith('http') ? postUrl : `https://${postUrl}`;
+          linkPostsHtml = `<a href="${postUrlValida}" target="_blank" class="block text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline truncate">📌 Post: ${postUrl}</a>`;
+        }
+
         const card = document.createElement('div');
         card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 flex flex-col";
         card.innerHTML = `
@@ -626,9 +769,13 @@
             <span class="font-bold text-slate-900 dark:text-white text-sm">${rascunho.empresa}</span>
             ${dataLimiteExibicao ? `<span class="text-[11px] text-purple-600 dark:text-purple-400 font-medium">📅 ${dataLimiteExibicao}</span>` : ''}
           </div>
-          <div class="flex-1">
+          <div class="flex-1 space-y-1">
             <h4 class="font-semibold text-slate-800 dark:text-slate-200 text-xs">${rascunho.nomePost}</h4>
-            ${rascunho.descricaoPost ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 whitespace-pre-wrap">${rascunho.descricaoPost}</p>` : ''}
+            ${rascunho.descricaoPost ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 whitespace-pre-wrap">${rascunho.descricaoPost}</p>` : ''}
+            <div class="pt-1 space-y-0.5">
+              ${linkPostsHtml}
+              ${linksIdeiasHtml}
+            </div>
           </div>
           <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
             <button data-id="${rascunho.id}" class="btn-editar-rascunho text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-2 py-1 rounded text-[11px] font-semibold transition">Editar</button>
@@ -653,7 +800,6 @@
       });
     }
 
-    // Modal de Edição de Rascunho
     function abrirModalEdicaoRascunho(id) {
       const rascunho = rascunhosData.find(r => r.id === id);
       if (!rascunho) return;
@@ -662,6 +808,8 @@
       document.getElementById('editRascunhoEmpresa').value = rascunho.empresa || '';
       document.getElementById('editRascunhoNomePost').value = rascunho.nomePost || '';
       document.getElementById('editRascunhoDescricao').value = rascunho.descricaoPost || '';
+      document.getElementById('editRascunhoLinkPosts').value = rascunho.linkPosts || '';
+      document.getElementById('editRascunhoLinkIdeias').value = rascunho.linkIdeias || '';
       document.getElementById('editRascunhoDataLimite').value = rascunho.dataLimite || '';
 
       modalEdicaoRascunho.classList.remove('hidden');
@@ -683,6 +831,8 @@
           empresa: document.getElementById('editRascunhoEmpresa').value,
           nomePost: document.getElementById('editRascunhoNomePost').value,
           descricaoPost: document.getElementById('editRascunhoDescricao').value,
+          linkPosts: document.getElementById('editRascunhoLinkPosts').value,
+          linkIdeias: document.getElementById('editRascunhoLinkIdeias').value,
           dataLimite: document.getElementById('editRascunhoDataLimite').value
         });
         modalEdicaoRascunho.classList.add('hidden');
@@ -701,6 +851,8 @@
           empresa: document.getElementById('rascunhoEmpresa').value,
           nomePost: document.getElementById('rascunhoNomePost').value,
           descricaoPost: document.getElementById('rascunhoDescricao').value,
+          linkPosts: document.getElementById('rascunhoLinkPosts').value,
+          linkIdeias: document.getElementById('rascunhoLinkIdeias').value,
           dataLimite: document.getElementById('rascunhoDataLimite').value,
           criadoEm: new Date()
         });
@@ -713,6 +865,9 @@
 
     btnAbrirRascunhos.addEventListener('click', () => modalRascunhos.classList.remove('hidden'));
     btnFecharRascunhos.addEventListener('click', () => modalRascunhos.classList.add('hidden'));
+
+    btnAbrirArquivados.addEventListener('click', () => { renderizarArquivados(); modalArquivados.classList.remove('hidden'); });
+    btnFecharArquivados.addEventListener('click', () => modalArquivados.classList.add('hidden'));
 
     function renderizarCalendario() {
       gridCalendario.innerHTML = '';
