@@ -332,6 +332,12 @@
         </h2>
         
         <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
+          <!-- Caixa de alternância solicitada pela Leh -->
+          <select id="filtroStatusCalendario" class="text-sm px-3 py-1.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition cursor-pointer">
+            <option value="agendado_ekyte">Ver: Agendados (eKyte)</option>
+            <option value="postado">Ver: Postados</option>
+          </select>
+
           <div class="flex gap-1">
             <button id="btnMesAnterior" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">&lt;</button>
             <button id="btnMesAtual" class="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">Hoje</button>
@@ -476,6 +482,7 @@
     const btnMesAnterior = document.getElementById('btnMesAnterior');
     const btnMesAtual = document.getElementById('btnMesAtual');
     const btnMesProximo = document.getElementById('btnMesProximo');
+    const filtroStatusCalendario = document.getElementById('filtroStatusCalendario');
 
     const modalRascunhos = document.getElementById('modalRascunhos');
     const btnAbrirRascunhos = document.getElementById('btnAbrirRascunhos');
@@ -893,7 +900,7 @@
         rascunhoForm.reset();
       } catch (err) {
         console.error("Erro ao salvar rascunho:", err);
-        alert("Erro ao salvar rascunho.");
+        alert("Ocorreu um erro ao salvar o rascunho.");
       }
     });
 
@@ -919,6 +926,8 @@
         gridCalendario.appendChild(divVazia);
       }
 
+      const statusSelecionado = filtroStatusCalendario.value;
+
       for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataString = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         const cell = document.createElement('div');
@@ -933,8 +942,8 @@
           </div>
         `;
 
-        // Exibe estritamente pela data de postagem
-        const postsDoDia = postsData.filter(p => p.dataPostagem === dataString);
+        // Filtra estritamente pelo status selecionado (agendado_ekyte ou postado) e pela data de postagem
+        const postsDoDia = postsData.filter(p => p.status === statusSelecionado && p.dataPostagem === dataString);
 
         postsDoDia.forEach(post => {
           const badge = statusMap[post.status] || statusMap.pendente;
@@ -955,6 +964,7 @@
       }
     }
 
+    filtroStatusCalendario.addEventListener('change', renderizarCalendario);
     btnAbrirCalendario.addEventListener('click', () => { renderizarCalendario(); modalCalendario.classList.remove('hidden'); });
     btnFecharCalendario.addEventListener('click', () => modalCalendario.classList.add('hidden'));
     btnMesAnterior.addEventListener('click', () => { dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() - 1); renderizarCalendario(); });
