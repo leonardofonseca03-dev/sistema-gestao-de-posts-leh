@@ -57,6 +57,11 @@
           Posts Finalizados: <span id="totalPosts" class="text-brand-700 dark:text-brand-300 font-bold">0</span>
         </div>
         
+        <!-- Botão Rascunhos -->
+        <button id="btnAbrirRascunhos" class="px-4 py-2 flex items-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold transition-colors shadow-sm shadow-purple-600/20 text-sm">
+          💡 <span class="hidden sm:inline">Rascunhos</span>
+        </button>
+
         <!-- Botão Calendário -->
         <button id="btnAbrirCalendario" class="px-4 py-2 flex items-center gap-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors shadow-sm shadow-blue-500/20 text-sm">
           📅 <span class="hidden sm:inline">Calendário</span>
@@ -178,6 +183,98 @@
     </div>
   </footer>
 
+  <!-- Modal de Rascunhos -->
+  <div id="modalRascunhos" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-3xl h-[85vh] flex flex-col relative border border-slate-200 dark:border-slate-700">
+      
+      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          💡 Banco de Ideias & Rascunhos
+        </h2>
+        <button id="btnFecharRascunhos" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 dark:bg-slate-900">
+        <!-- Formulário do Rascunho -->
+        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 h-fit">
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-3">Novo Rascunho</h3>
+          <form id="rascunhoForm" class="space-y-3">
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Empresa</label>
+              <input type="text" id="rascunhoEmpresa" required placeholder="Ex: Loja X" 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Título do Post</label>
+              <input type="text" id="rascunhoNomePost" required placeholder="Ex: Ideia Reels" 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Ideia / Descrição</label>
+              <textarea id="rascunhoDescricao" rows="2" placeholder="Escreva a ideia..." 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white"></textarea>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data Limite para Postagem</label>
+              <input type="date" id="rascunhoDataLimite" 
+                     class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white cursor-pointer">
+            </div>
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs transition shadow-md shadow-purple-600/25 mt-1">
+              Salvar Rascunho
+            </button>
+          </form>
+        </div>
+
+        <!-- Lista de Rascunhos -->
+        <div class="md:col-span-2 space-y-3" id="listaRascunhos">
+          <!-- Renderizado via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVO: Modal de Edição de Rascunho -->
+  <div id="modalEdicaoRascunho" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-sm p-5 relative border border-slate-200 dark:border-slate-700">
+      <button id="btnFecharModalEdicaoRascunho" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <h3 class="font-bold text-slate-900 dark:text-white text-base mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span> Editar Ideia
+      </h3>
+
+      <form id="formEdicaoRascunho" class="space-y-3">
+        <input type="hidden" id="editRascunhoId">
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Empresa</label>
+          <input type="text" id="editRascunhoEmpresa" required class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Título do Post</label>
+          <input type="text" id="editRascunhoNomePost" required class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Ideia / Descrição</label>
+          <textarea id="editRascunhoDescricao" rows="3" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data Limite para Postagem</label>
+          <input type="date" id="editRascunhoDataLimite" class="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-white cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+        </div>
+        <button type="submit" id="btnSalvarEdicaoRascunho" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-xl text-sm transition shadow-md shadow-blue-600/25 mt-2">
+          Atualizar Rascunho
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal de Calendário -->
   <div id="modalCalendario" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex flex-col relative border border-slate-200 dark:border-slate-700">
@@ -218,7 +315,7 @@
     </div>
   </div>
 
-  <!-- Modal de Edição -->
+  <!-- Modal de Edição Principal -->
   <div id="modalEdicao" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
       <button id="btnFecharModalEdicao" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
@@ -337,7 +434,18 @@
     const btnMesProximo = document.getElementById('btnMesProximo');
     const tipoDataCalendario = document.getElementById('tipoDataCalendario');
 
+    const modalRascunhos = document.getElementById('modalRascunhos');
+    const btnAbrirRascunhos = document.getElementById('btnAbrirRascunhos');
+    const btnFecharRascunhos = document.getElementById('btnFecharRascunhos');
+    const rascunhoForm = document.getElementById('rascunhoForm');
+    const listaRascunhos = document.getElementById('listaRascunhos');
+
+    const modalEdicaoRascunho = document.getElementById('modalEdicaoRascunho');
+    const formEdicaoRascunho = document.getElementById('formEdicaoRascunho');
+    const btnFecharModalEdicaoRascunho = document.getElementById('btnFecharModalEdicaoRascunho');
+
     let postsData = [];
+    let rascunhosData = [];
     let dataCalendarioAtual = new Date();
 
     const statusMap = {
@@ -361,7 +469,6 @@
         });
 
         renderizarLista();
-        
         if (!modalCalendario.classList.contains('hidden')) {
           renderizarCalendario();
         }
@@ -373,8 +480,20 @@
           }, 800);
         }
       }, (error) => {
-        console.error("Erro ao escutar dados em tempo real: ", error);
-        listaPosts.innerHTML = `<p class="text-red-500 text-sm py-4">Erro ao conectar. Verifique sua internet.</p>`;
+        console.error("Erro ao escutar dados: ", error);
+      });
+    }
+
+    function iniciarEscutaRascunhos() {
+      const q = query(collection(db, "rascunhos"), orderBy("criadoEm", "desc"));
+      onSnapshot(q, (querySnapshot) => {
+        rascunhosData = [];
+        querySnapshot.forEach((doc) => {
+          rascunhosData.push({ id: doc.id, ...doc.data() });
+        });
+        renderizarRascunhos();
+      }, (error) => {
+        console.error("Erro ao escutar rascunhos: ", error);
       });
     }
 
@@ -413,17 +532,13 @@
         let dataExibicao = post.dataEnvio || 'N/A';
         if (dataExibicao !== 'N/A') {
           const partesData = dataExibicao.split('-');
-          if(partesData.length === 3) {
-             dataExibicao = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
-          }
+          if(partesData.length === 3) dataExibicao = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
         }
 
         let dataPostagemExibicao = post.dataPostagem ? post.dataPostagem : 'Não definida';
         if (post.dataPostagem) {
           const partesDataPost = post.dataPostagem.split('-');
-          if(partesDataPost.length === 3) {
-             dataPostagemExibicao = `${partesDataPost[2]}/${partesDataPost[1]}/${partesDataPost[0]}`;
-          }
+          if(partesDataPost.length === 3) dataPostagemExibicao = `${partesDataPost[2]}/${partesDataPost[1]}/${partesDataPost[0]}`;
         }
 
         const card = document.createElement('div');
@@ -471,8 +586,7 @@
 
       document.querySelectorAll('.mudar-status').forEach(select => {
         select.addEventListener('change', async (e) => {
-          const id = e.target.dataset.id;
-          await updateDoc(doc(db, "posts", id), { status: e.target.value });
+          await updateDoc(doc(db, "posts", e.target.dataset.id), { status: e.target.value });
         });
       });
 
@@ -486,17 +600,124 @@
 
       document.querySelectorAll('.btn-editar').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          const id = e.target.dataset.id;
-          abrirModalEdicao(id);
+          abrirModalEdicao(e.target.dataset.id);
         });
       });
     }
+
+    function renderizarRascunhos() {
+      listaRascunhos.innerHTML = '';
+      if (rascunhosData.length === 0) {
+        listaRascunhos.innerHTML = `<p class="text-slate-400 text-sm py-4">Nenhum rascunho salvo ainda.</p>`;
+        return;
+      }
+
+      rascunhosData.forEach(rascunho => {
+        let dataLimiteExibicao = rascunho.dataLimite ? rascunho.dataLimite : '';
+        if (rascunho.dataLimite) {
+          const partes = rascunho.dataLimite.split('-');
+          if(partes.length === 3) dataLimiteExibicao = `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+
+        const card = document.createElement('div');
+        card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 flex flex-col";
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-900 dark:text-white text-sm">${rascunho.empresa}</span>
+            ${dataLimiteExibicao ? `<span class="text-[11px] text-purple-600 dark:text-purple-400 font-medium">📅 ${dataLimiteExibicao}</span>` : ''}
+          </div>
+          <div class="flex-1">
+            <h4 class="font-semibold text-slate-800 dark:text-slate-200 text-xs">${rascunho.nomePost}</h4>
+            ${rascunho.descricaoPost ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 whitespace-pre-wrap">${rascunho.descricaoPost}</p>` : ''}
+          </div>
+          <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
+            <button data-id="${rascunho.id}" class="btn-editar-rascunho text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-2 py-1 rounded text-[11px] font-semibold transition">Editar</button>
+            <button data-id="${rascunho.id}" class="btn-deletar-rascunho text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 px-2 py-1 rounded text-[11px] font-semibold transition">Excluir</button>
+          </div>
+        `;
+        listaRascunhos.appendChild(card);
+      });
+
+      document.querySelectorAll('.btn-deletar-rascunho').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (confirm('Excluir este rascunho?')) {
+            await deleteDoc(doc(db, "rascunhos", e.target.dataset.id));
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-editar-rascunho').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          abrirModalEdicaoRascunho(e.target.dataset.id);
+        });
+      });
+    }
+
+    // Modal de Edição de Rascunho
+    function abrirModalEdicaoRascunho(id) {
+      const rascunho = rascunhosData.find(r => r.id === id);
+      if (!rascunho) return;
+
+      document.getElementById('editRascunhoId').value = rascunho.id;
+      document.getElementById('editRascunhoEmpresa').value = rascunho.empresa || '';
+      document.getElementById('editRascunhoNomePost').value = rascunho.nomePost || '';
+      document.getElementById('editRascunhoDescricao').value = rascunho.descricaoPost || '';
+      document.getElementById('editRascunhoDataLimite').value = rascunho.dataLimite || '';
+
+      modalEdicaoRascunho.classList.remove('hidden');
+    }
+
+    btnFecharModalEdicaoRascunho.addEventListener('click', () => {
+      modalEdicaoRascunho.classList.add('hidden');
+    });
+
+    formEdicaoRascunho.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarEdicaoRascunho');
+      btn.innerText = 'Salvando...';
+      btn.disabled = true;
+
+      try {
+        const id = document.getElementById('editRascunhoId').value;
+        await updateDoc(doc(db, "rascunhos", id), {
+          empresa: document.getElementById('editRascunhoEmpresa').value,
+          nomePost: document.getElementById('editRascunhoNomePost').value,
+          descricaoPost: document.getElementById('editRascunhoDescricao').value,
+          dataLimite: document.getElementById('editRascunhoDataLimite').value
+        });
+        modalEdicaoRascunho.classList.add('hidden');
+      } catch (err) {
+        console.error("Erro ao editar rascunho:", err);
+      } finally {
+        btn.innerText = 'Atualizar Rascunho';
+        btn.disabled = false;
+      }
+    });
+
+    rascunhoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await addDoc(collection(db, "rascunhos"), {
+          empresa: document.getElementById('rascunhoEmpresa').value,
+          nomePost: document.getElementById('rascunhoNomePost').value,
+          descricaoPost: document.getElementById('rascunhoDescricao').value,
+          dataLimite: document.getElementById('rascunhoDataLimite').value,
+          criadoEm: new Date()
+        });
+        rascunhoForm.reset();
+      } catch (err) {
+        console.error("Erro ao salvar rascunho:", err);
+        alert("Erro ao salvar rascunho.");
+      }
+    });
+
+    btnAbrirRascunhos.addEventListener('click', () => modalRascunhos.classList.remove('hidden'));
+    btnFecharRascunhos.addEventListener('click', () => modalRascunhos.classList.add('hidden'));
 
     function renderizarCalendario() {
       gridCalendario.innerHTML = '';
       const ano = dataCalendarioAtual.getFullYear();
       const mes = dataCalendarioAtual.getMonth();
-
       const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
       tituloMesAnoCalendario.innerText = `${nomesMeses[mes]} ${ano}`;
 
@@ -513,7 +734,6 @@
 
       for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataString = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        
         const cell = document.createElement('div');
         cell.className = "bg-white dark:bg-slate-800 p-2 min-h-[100px] rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col gap-1 transition overflow-hidden hover:shadow-md cursor-pointer";
         
@@ -527,7 +747,6 @@
         `;
 
         const postsDoDia = postsData.filter(p => p[tipoData] === dataString);
-        
         postsDoDia.forEach(post => {
           const badge = statusMap[post.status] || statusMap.pendente;
           const postDiv = document.createElement('div');
@@ -548,35 +767,15 @@
     }
 
     tipoDataCalendario.addEventListener('change', renderizarCalendario);
-
-    btnAbrirCalendario.addEventListener('click', () => {
-      renderizarCalendario();
-      modalCalendario.classList.remove('hidden');
-    });
-
-    btnFecharCalendario.addEventListener('click', () => {
-      modalCalendario.classList.add('hidden');
-    });
-
-    btnMesAnterior.addEventListener('click', () => {
-      dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() - 1);
-      renderizarCalendario();
-    });
-
-    btnMesProximo.addEventListener('click', () => {
-      dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() + 1);
-      renderizarCalendario();
-    });
-
-    btnMesAtual.addEventListener('click', () => {
-      dataCalendarioAtual = new Date();
-      renderizarCalendario();
-    });
+    btnAbrirCalendario.addEventListener('click', () => { renderizarCalendario(); modalCalendario.classList.remove('hidden'); });
+    btnFecharCalendario.addEventListener('click', () => modalCalendario.classList.add('hidden'));
+    btnMesAnterior.addEventListener('click', () => { dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() - 1); renderizarCalendario(); });
+    btnMesProximo.addEventListener('click', () => { dataCalendarioAtual.setMonth(dataCalendarioAtual.getMonth() + 1); renderizarCalendario(); });
+    btnMesAtual.addEventListener('click', () => { dataCalendarioAtual = new Date(); renderizarCalendario(); });
 
     function abrirModalEdicao(id) {
       const post = postsData.find(p => p.id === id);
       if (!post) return;
-
       document.getElementById('editId').value = post.id;
       document.getElementById('editEmpresa').value = post.empresa || '';
       document.getElementById('editNomePost').value = post.nomePost || '';
@@ -585,23 +784,18 @@
       document.getElementById('editDataEnvio').value = post.dataEnvio || '';
       document.getElementById('editDataPostagem').value = post.dataPostagem || '';
       document.getElementById('editArquivoUrl').value = post.arquivoUrl || '';
-
       modalEdicao.classList.remove('hidden');
     }
 
-    btnFecharModalEdicao.addEventListener('click', () => {
-      modalEdicao.classList.add('hidden');
-    });
+    btnFecharModalEdicao.addEventListener('click', () => modalEdicao.classList.add('hidden'));
 
     formEdicao.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSalvarEdicao');
       btn.innerText = 'Salvando...';
       btn.disabled = true;
-
       try {
-        const id = document.getElementById('editId').value;
-        await updateDoc(doc(db, "posts", id), {
+        await updateDoc(doc(db, "posts", document.getElementById('editId').value), {
           empresa: document.getElementById('editEmpresa').value,
           nomePost: document.getElementById('editNomePost').value,
           descricaoPost: document.getElementById('editDescricaoPost').value,
@@ -610,11 +804,9 @@
           dataPostagem: document.getElementById('editDataPostagem').value,
           arquivoUrl: document.getElementById('editArquivoUrl').value
         });
-
         modalEdicao.classList.add('hidden');
       } catch (err) {
         console.error("Erro ao editar:", err);
-        alert("Ocorreu um erro ao salvar as alterações.");
       } finally {
         btn.innerText = 'Salvar Alterações';
         btn.disabled = false;
@@ -630,10 +822,7 @@
       const btn = document.getElementById('btnSalvar');
       btn.innerText = 'Salvando...';
       btn.disabled = true;
-
       try {
-        const arquivoUrl = document.getElementById('arquivoUrl').value;
-
         await addDoc(collection(db, "posts"), {
           empresa: document.getElementById('empresa').value,
           nomePost: document.getElementById('nomePost').value,
@@ -641,14 +830,12 @@
           status: document.getElementById('status').value,
           dataEnvio: document.getElementById('dataEnvio').value,
           dataPostagem: document.getElementById('dataPostagem').value,
-          arquivoUrl: arquivoUrl,
+          arquivoUrl: document.getElementById('arquivoUrl').value,
           criadoEm: new Date()
         });
-
         postForm.reset();
       } catch (err) {
         console.error("Erro ao salvar:", err);
-        alert("Ocorreu um erro ao salvar o registro.");
       } finally {
         btn.innerText = 'Cadastrar Post';
         btn.disabled = false;
@@ -656,6 +843,7 @@
     });
 
     iniciarEscutaTempoReal();
+    iniciarEscutaRascunhos();
   </script>
 </body>
 </html>
