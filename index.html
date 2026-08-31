@@ -26,7 +26,21 @@
     }
   </script>
 </head>
-<body class="bg-brand-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen relative transition-colors duration-200 flex flex-col">
+<body class="bg-brand-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen relative transition-colors duration-200 flex flex-col overflow-x-hidden">
+
+  <!-- Tela de Abertura (Splash Screen) -->
+  <div id="splashScreen" class="fixed inset-0 z-[100] bg-brand-900 dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out">
+    <div class="w-24 h-24 bg-brand-500 rounded-3xl flex items-center justify-center text-white text-5xl font-bold shadow-2xl shadow-brand-500/40 mb-6 animate-pulse">
+      P
+    </div>
+    <h1 class="text-3xl font-bold text-white mb-3 tracking-wide">Painel de Conteúdos</h1>
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 bg-brand-300 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+      <div class="w-2 h-2 bg-brand-300 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+      <div class="w-2 h-2 bg-brand-300 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+    </div>
+    <p class="text-brand-200/80 dark:text-slate-400 text-sm font-medium mt-4">Organizando suas demandas...</p>
+  </div>
 
   <!-- Header -->
   <header class="bg-white dark:bg-slate-800 border-b border-brand-100 dark:border-slate-700 sticky top-0 z-10 shadow-sm transition-colors duration-200">
@@ -95,13 +109,13 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Qtd de Posts</label>
-            <input type="number" step="1" min="1" id="quantidade" required placeholder="Ex: 3" 
-                   class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500">
-          </div>
-          <div>
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Envio</label>
             <input type="date" id="dataEnvio" required 
+                   class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Postagem</label>
+            <input type="date" id="dataPostagem" required 
                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
           </div>
         </div>
@@ -164,34 +178,39 @@
     </div>
   </footer>
 
-  <!-- Modal de Calendário (NOVO) -->
+  <!-- Modal de Calendário -->
   <div id="modalCalendario" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-5xl h-[85vh] flex flex-col relative border border-slate-200 dark:border-slate-700">
       
-      <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700">
-        <div class="flex items-center gap-4">
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            📅 <span id="tituloMesAnoCalendario">Mês Ano</span>
-          </h2>
+      <div class="flex flex-col sm:flex-row items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700 gap-4">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 whitespace-nowrap">
+          📅 <span id="tituloMesAnoCalendario">Mês Ano</span>
+        </h2>
+        
+        <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3 w-full sm:w-auto">
+          <select id="tipoDataCalendario" class="text-sm px-3 py-1.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition cursor-pointer">
+            <option value="dataEnvio">Ver: Data de Envio</option>
+            <option value="dataPostagem">Ver: Data de Postagem</option>
+          </select>
+
           <div class="flex gap-1">
             <button id="btnMesAnterior" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">&lt;</button>
             <button id="btnMesAtual" class="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">Hoje</button>
             <button id="btnMesProximo" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">&gt;</button>
           </div>
+          
+          <button id="btnFecharCalendario" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <button id="btnFecharCalendario" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
       <div class="flex-1 overflow-auto p-4 bg-slate-50 dark:bg-slate-900">
-        <!-- Cabeçalho Dias da Semana -->
         <div class="grid grid-cols-7 gap-px mb-2 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
           <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
         </div>
-        <!-- Grid do Calendário -->
         <div id="gridCalendario" class="grid grid-cols-7 gap-2">
           <!-- Renderizado via JS -->
         </div>
@@ -237,12 +256,12 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Qtd de Posts</label>
-            <input type="number" step="1" min="1" id="editQuantidade" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white">
-          </div>
-          <div>
             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Envio</label>
             <input type="date" id="editDataEnvio" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Data de Postagem</label>
+            <input type="date" id="editDataPostagem" required class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition text-sm text-slate-800 dark:text-white cursor-pointer">
           </div>
         </div>
         <div>
@@ -258,8 +277,9 @@
 
   <!-- Firebase Integration e Lógicas -->
   <script type="module">
+    // AGORA USAMOS onSnapshot PARA ESCUTAR EM TEMPO REAL!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, updateDoc, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCXXbbowjBZKuB0HpDJMuuuIVmdFgNgS2A",
@@ -297,6 +317,7 @@
     });
 
     // Elementos da página
+    const splashScreen = document.getElementById('splashScreen');
     const postForm = document.getElementById('postForm');
     const listaPosts = document.getElementById('listaPosts');
     const totalPostsEl = document.getElementById('totalPosts');
@@ -308,7 +329,6 @@
     const formEdicao = document.getElementById('formEdicao');
     const btnFecharModalEdicao = document.getElementById('btnFecharModalEdicao');
 
-    // Elementos do Calendário
     const modalCalendario = document.getElementById('modalCalendario');
     const btnAbrirCalendario = document.getElementById('btnAbrirCalendario');
     const btnFecharCalendario = document.getElementById('btnFecharCalendario');
@@ -317,11 +337,11 @@
     const btnMesAnterior = document.getElementById('btnMesAnterior');
     const btnMesAtual = document.getElementById('btnMesAtual');
     const btnMesProximo = document.getElementById('btnMesProximo');
+    const tipoDataCalendario = document.getElementById('tipoDataCalendario');
 
     let postsData = [];
-    let dataCalendarioAtual = new Date(); // Guarda o mês/ano que o calendário está mostrando
+    let dataCalendarioAtual = new Date();
 
-    // Cores das Badges
     const statusMap = {
       pendente: { label: 'Pendente', bg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' },
       em_producao: { label: 'Em Produção', bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' },
@@ -329,20 +349,38 @@
       postado: { label: 'Postado', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' }
     };
 
-    async function carregarPosts() {
-      listaPosts.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm">Carregando...</p>`;
-      const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
-      const querySnapshot = await getDocs(q);
-      
-      postsData = [];
-      querySnapshot.forEach((doc) => {
-        postsData.push({ id: doc.id, ...doc.data() });
-      });
-
-      renderizarLista();
-      if (!modalCalendario.classList.contains('hidden')) {
-        renderizarCalendario();
+    // NOVA FUNÇÃO: Ouve as mudanças no Firebase em TEMPO REAL
+    function iniciarEscutaTempoReal() {
+      if(splashScreen && !splashScreen.classList.contains('hidden')) {
+        listaPosts.innerHTML = `<p class="text-slate-400 dark:text-slate-500 text-sm">Atualizando...</p>`;
       }
+
+      const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+      
+      // onSnapshot atualiza a lista automaticamente sempre que algo muda no banco
+      onSnapshot(q, (querySnapshot) => {
+        postsData = [];
+        querySnapshot.forEach((doc) => {
+          postsData.push({ id: doc.id, ...doc.data() });
+        });
+
+        renderizarLista();
+        
+        if (!modalCalendario.classList.contains('hidden')) {
+          renderizarCalendario();
+        }
+
+        // Esconde a tela de abertura na primeira vez que os dados chegarem
+        if (splashScreen && !splashScreen.classList.contains('hidden')) {
+          setTimeout(() => {
+            splashScreen.classList.add('opacity-0');
+            setTimeout(() => splashScreen.classList.add('hidden'), 700);
+          }, 800);
+        }
+      }, (error) => {
+        console.error("Erro ao escutar dados em tempo real: ", error);
+        listaPosts.innerHTML = `<p class="text-red-500 text-sm py-4">Erro ao conectar. Verifique sua internet.</p>`;
+      });
     }
 
     function renderizarLista() {
@@ -356,7 +394,7 @@
         const nomeDoPost = (post.nomePost || '').toLowerCase();
         
         const matchTexto = nomeEmpresa.includes(termoBusca) || nomeDoPost.includes(termoBusca);
-        const matchData = !dataBusca || post.dataEnvio === dataBusca;
+        const matchData = !dataBusca || post.dataEnvio === dataBusca || post.dataPostagem === dataBusca;
 
         return matchStatus && matchTexto && matchData;
       });
@@ -372,7 +410,7 @@
 
       filtrados.forEach(post => {
         if (post.status === 'postado' || post.status === 'enviado_aprovacao') {
-          total += Number(post.quantidade || 0);
+          total += 1;
         }
 
         const badge = statusMap[post.status] || statusMap.pendente;
@@ -382,6 +420,14 @@
           const partesData = dataExibicao.split('-');
           if(partesData.length === 3) {
              dataExibicao = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+          }
+        }
+
+        let dataPostagemExibicao = post.dataPostagem || 'N/A';
+        if (dataPostagemExibicao !== 'N/A') {
+          const partesDataPost = dataPostagemExibicao.split('-');
+          if(partesDataPost.length === 3) {
+             dataPostagemExibicao = `${partesDataPost[2]}/${partesDataPost[1]}/${partesDataPost[0]}`;
           }
         }
 
@@ -399,9 +445,9 @@
               ${post.descricaoPost ? `<p class="text-xs text-slate-600 dark:text-slate-400 mt-1 whitespace-pre-wrap">${post.descricaoPost}</p>` : ''}
             </div>
 
-            <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-4">
-              <span>Data Envio: <strong class="dark:text-slate-300">${dataExibicao}</strong></span>
-              <span>Qtd Posts: <strong class="text-slate-700 dark:text-slate-300">${post.quantidade || 0}</strong></span>
+            <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-4">
+              <span>Data Envio: <strong class="text-slate-700 dark:text-slate-300">${dataExibicao}</strong></span>
+              <span>Data Postagem: <strong class="text-slate-700 dark:text-slate-300">${dataPostagemExibicao}</strong></span>
             </div>
             ${post.arquivoUrl ? `
               <a href="${post.arquivoUrl}" target="_blank" class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline pt-1">
@@ -432,7 +478,7 @@
         select.addEventListener('change', async (e) => {
           const id = e.target.dataset.id;
           await updateDoc(doc(db, "posts", id), { status: e.target.value });
-          carregarPosts();
+          // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
         });
       });
 
@@ -440,7 +486,7 @@
         btn.addEventListener('click', async (e) => {
           if (confirm('Deseja remover este registro?')) {
             await deleteDoc(doc(db, "posts", e.target.dataset.id));
-            carregarPosts();
+            // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
           }
         });
       });
@@ -453,36 +499,31 @@
       });
     }
 
-    // -- LÓGICA DO CALENDÁRIO --
     function renderizarCalendario() {
       gridCalendario.innerHTML = '';
       const ano = dataCalendarioAtual.getFullYear();
       const mes = dataCalendarioAtual.getMonth();
 
-      // Nomes dos meses em português
       const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
       tituloMesAnoCalendario.innerText = `${nomesMeses[mes]} ${ano}`;
 
-      // Encontrar 1º dia do mês e total de dias no mês
-      const primeiroDiaSemana = new Date(ano, mes, 1).getDay(); // 0 (Dom) a 6 (Sáb)
+      const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
       const diasNoMes = new Date(ano, mes + 1, 0).getDate();
 
-      // Células vazias antes do dia 1
       for (let i = 0; i < primeiroDiaSemana; i++) {
         const divVazia = document.createElement('div');
         divVazia.className = "bg-transparent p-2 min-h-[100px] border border-transparent rounded-lg opacity-50";
         gridCalendario.appendChild(divVazia);
       }
 
-      // Dias reais do mês
+      const tipoData = tipoDataCalendario.value;
+
       for (let dia = 1; dia <= diasNoMes; dia++) {
-        // Formatar string de data para YYYY-MM-DD pra cruzar com o Firebase
         const dataString = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
         
         const cell = document.createElement('div');
         cell.className = "bg-white dark:bg-slate-800 p-2 min-h-[100px] rounded-lg border border-slate-100 dark:border-slate-700 flex flex-col gap-1 transition overflow-hidden hover:shadow-md cursor-pointer";
         
-        // Destacar o dia de hoje
         const hoje = new Date();
         const ehHoje = dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear();
         
@@ -492,20 +533,17 @@
           </div>
         `;
 
-        // Filtrar posts deste dia
-        const postsDoDia = postsData.filter(p => p.dataEnvio === dataString);
+        const postsDoDia = postsData.filter(p => p[tipoData] === dataString);
         
         postsDoDia.forEach(post => {
           const badge = statusMap[post.status] || statusMap.pendente;
           const postDiv = document.createElement('div');
-          // Chip colorido do post
           postDiv.className = `text-[10px] leading-tight px-1.5 py-1 rounded border font-medium truncate ${badge.bg}`;
-          postDiv.title = `${post.empresa} - ${post.nomePost}`; // Tooltip nativo
+          postDiv.title = `${post.empresa} - ${post.nomePost}`;
           postDiv.innerText = `${post.empresa}: ${post.nomePost || 'Post'}`;
           cell.appendChild(postDiv);
         });
 
-        // Clique na célula do calendário filtra a lista debaixo pela data
         cell.addEventListener('click', () => {
           buscaData.value = dataString;
           renderizarLista();
@@ -515,6 +553,8 @@
         gridCalendario.appendChild(cell);
       }
     }
+
+    tipoDataCalendario.addEventListener('change', renderizarCalendario);
 
     btnAbrirCalendario.addEventListener('click', () => {
       renderizarCalendario();
@@ -536,11 +576,10 @@
     });
 
     btnMesAtual.addEventListener('click', () => {
-      dataCalendarioAtual = new Date(); // Reseta pro mês atual
+      dataCalendarioAtual = new Date();
       renderizarCalendario();
     });
 
-    // -- LÓGICA DE EDIÇÃO --
     function abrirModalEdicao(id) {
       const post = postsData.find(p => p.id === id);
       if (!post) return;
@@ -550,8 +589,8 @@
       document.getElementById('editNomePost').value = post.nomePost || '';
       document.getElementById('editDescricaoPost').value = post.descricaoPost || '';
       document.getElementById('editStatus').value = post.status || 'pendente';
-      document.getElementById('editQuantidade').value = post.quantidade || 1;
       document.getElementById('editDataEnvio').value = post.dataEnvio || '';
+      document.getElementById('editDataPostagem').value = post.dataPostagem || '';
       document.getElementById('editArquivoUrl').value = post.arquivoUrl || '';
 
       modalEdicao.classList.remove('hidden');
@@ -574,13 +613,13 @@
           nomePost: document.getElementById('editNomePost').value,
           descricaoPost: document.getElementById('editDescricaoPost').value,
           status: document.getElementById('editStatus').value,
-          quantidade: parseInt(document.getElementById('editQuantidade').value, 10),
           dataEnvio: document.getElementById('editDataEnvio').value,
+          dataPostagem: document.getElementById('editDataPostagem').value,
           arquivoUrl: document.getElementById('editArquivoUrl').value
         });
 
         modalEdicao.classList.add('hidden');
-        await carregarPosts();
+        // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
       } catch (err) {
         console.error("Erro ao editar:", err);
         alert("Ocorreu um erro ao salvar as alterações.");
@@ -590,12 +629,10 @@
       }
     });
 
-    // Filtros de Pesquisa Form Principal
     buscaTexto.addEventListener('input', renderizarLista);
     buscaStatus.addEventListener('change', renderizarLista);
     buscaData.addEventListener('change', renderizarLista);
 
-    // Novo Cadastro
     postForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btnSalvar');
@@ -610,14 +647,14 @@
           nomePost: document.getElementById('nomePost').value,
           descricaoPost: document.getElementById('descricaoPost').value,
           status: document.getElementById('status').value,
-          quantidade: parseInt(document.getElementById('quantidade').value, 10),
           dataEnvio: document.getElementById('dataEnvio').value,
+          dataPostagem: document.getElementById('dataPostagem').value,
           arquivoUrl: arquivoUrl,
           criadoEm: new Date()
         });
 
         postForm.reset();
-        await carregarPosts();
+        // Não precisa mais chamar a função de recarregar. O onSnapshot faz sozinho!
       } catch (err) {
         console.error("Erro ao salvar:", err);
         alert("Ocorreu um erro ao salvar o registro.");
@@ -627,7 +664,8 @@
       }
     });
 
-    carregarPosts();
+    // Inicia a escuta em tempo real direto na abertura!
+    iniciarEscutaTempoReal();
   </script>
 </body>
 </html>
