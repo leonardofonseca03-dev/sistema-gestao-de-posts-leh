@@ -941,7 +941,13 @@
           </div>
         `;
 
-        const postsDoDia = postsData.filter(p => p[tipoData] === dataString);
+        const postsDoDia = postsData.filter(p => {
+          if (p.status === 'agendado_ekyte' || p.status === 'postado') {
+            return p.dataPostagem === dataString || p.dataEnvio === dataString;
+          }
+          return p[tipoData] === dataString;
+        });
+
         postsDoDia.forEach(post => {
           const badge = statusMap[post.status] || statusMap.pendente;
           const postDiv = document.createElement('div');
